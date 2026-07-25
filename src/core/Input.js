@@ -2,61 +2,40 @@ export default class Input {
 
     constructor(canvas) {
 
-        this.x = 0;
-        this.y = 0;
+    this.x = 0;
+    this.y = 0;
 
-        this.drawX = 0;
-        this.drawY = 0;
+    this.drawX = 0;
+    this.drawY = 0;
 
-        this.clicked = false;
+    this.clicked = false;
 
-        const updatePosition = (clientX, clientY) => {
+    const updatePosition = (clientX, clientY) => {
 
-            const rect = canvas.getBoundingClientRect();
+        const rect = canvas.getBoundingClientRect();
 
-            this.x = clientX - rect.left;
-            this.y = clientY - rect.top;
+        this.x = clientX - rect.left;
+        this.y = clientY - rect.top;
 
-        };
+    };
 
-        // Mouse
-        canvas.addEventListener("mousemove", (e) => {
+    canvas.style.touchAction = "none";
 
-            updatePosition(e.clientX, e.clientY);
+    canvas.addEventListener("pointermove", (e) => {
 
-        });
+        updatePosition(e.clientX, e.clientY);
 
-        canvas.addEventListener("mousedown", (e) => {
+    });
 
-            updatePosition(e.clientX, e.clientY);
-            this.clicked = true;
+    canvas.addEventListener("pointerdown", (e) => {
 
-        });
+        updatePosition(e.clientX, e.clientY);
 
-        // Touch
-        canvas.addEventListener("touchstart", (e) => {
+        this.clicked = true;
 
-            e.preventDefault();
+    });
 
-            const t = e.touches[0];
-
-            updatePosition(t.clientX, t.clientY);
-
-            this.clicked = true;
-
-        }, { passive: false });
-
-        canvas.addEventListener("touchmove", (e) => {
-
-            e.preventDefault();
-
-            const t = e.touches[0];
-
-            updatePosition(t.clientX, t.clientY);
-
-        }, { passive: false });
-
-    }
+}
 
     update() {
 
