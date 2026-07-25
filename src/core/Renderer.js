@@ -213,17 +213,19 @@ export default class Renderer {
 
         }
 
-        const hit =
+        // ต้องกำลังแตะหน้าจอหรือกดเมาส์อยู่ก่อน
+if (!this.input.isPointerDown) {
+    return;
+}
 
-            this.balloonManager.hit(
+const hit = this.balloonManager.hit(
+    this.input.drawX,
+    this.input.drawY
+);
 
-                this.input.drawX,
-
-                this.input.drawY
-
-            );
-
-        if (!hit) return;
+if (!hit) {
+    return;
+}
 
         this.lastHitTime =
 

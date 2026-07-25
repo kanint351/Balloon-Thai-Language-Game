@@ -18,11 +18,8 @@ export default class Input {
             const rect = canvas.getBoundingClientRect();
 
             // แปลงพิกัดจาก CSS เป็นพิกัดจริงของ Canvas
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-
-            this.x = (clientX - rect.left) * scaleX;
-            this.y = (clientY - rect.top) * scaleY;
+            this.x = clientX - rect.left;
+            this.y = clientY - rect.top;
         };
 
         canvas.addEventListener("pointerdown", (e) => {

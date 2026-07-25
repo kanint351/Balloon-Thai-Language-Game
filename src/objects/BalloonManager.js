@@ -21,8 +21,8 @@ export default class BalloonManager {
     this.uiScale = Math.max(
         0.75,
         Math.min(
-            this.canvas.width / 1280,
-            this.canvas.height / 720
+        this.canvas.clientWidth / 1280,
+        this.canvas.clientHeight / 720
         )
     );
 
@@ -84,10 +84,10 @@ export default class BalloonManager {
             x =
                 margin +
                 Math.random() *
-                (this.canvas.width - margin * 2);
+                (this.canvas.clientWidth - margin * 2);
 
             y =
-                this.canvas.height +
+                this.canvas.clientHeight +
                 80 * this.uiScale +
                 Math.random() * 
                 (300 * this.uiScale);
