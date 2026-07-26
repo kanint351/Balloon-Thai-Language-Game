@@ -292,8 +292,8 @@ ctx.bezierCurveTo(
     ctx.fillStyle = "#fff";
 
     const fontSize = Math.max(
-    34,
-    this.radius * 0.75
+    40,
+    this.radius * 0.78
 );
 
 ctx.font =

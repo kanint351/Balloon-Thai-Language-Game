@@ -78,7 +78,7 @@ ctx.restore();
 
     ctx.fillStyle = "#ffffff";
 
-    ctx.font = this.getFont(56);
+    ctx.font = this.getFont(96);
     ctx.fillText(
         "🎈 เกมลูกโป่งคำศัพท์",
         this.game.renderer.width / 2,
@@ -124,113 +124,89 @@ ctx.restore();
 
     drawScore(ctx) {
 
-        ctx.save();
+    ctx.save();
 
-        ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#FFFFFF";
 
-        ctx.font = this.getFont(46);
+    ctx.strokeStyle = "rgba(0,0,0,.45)";
 
-        ctx.textAlign = "left";
+    ctx.lineWidth = 6;
 
-        ctx.textBaseline = "top";
+    ctx.font = this.getFont(56);
 
-        ctx.strokeStyle = "rgba(0,0,0,.35)";
+    ctx.textAlign = "left";
 
-        ctx.lineWidth = 5;
+    ctx.textBaseline = "top";
 
-        const text =
-            `คะแนน : ${this.game.score}`;
+    const x = 60;
+    const y = 60;
 
-        
+    const text = `🏆 คะแนน ${this.game.score}`;
 
-        const margin = 60;
+    ctx.strokeText(text, x, y);
+    ctx.fillText(text, x, y);
 
-ctx.fillText(
-    `คะแนน : ${this.game.score}`,
-    margin,
-    margin
-);
+    ctx.restore();
 
-        ctx.restore();
-
-    }
+}
 
     drawTime(ctx) {
 
-        ctx.save();
+    ctx.save();
 
-        ctx.fillStyle = "#ffffff";
+    ctx.fillStyle = "#FFFFFF";
 
-        ctx.font = this.getFont(46);
+    ctx.strokeStyle = "rgba(0,0,0,.45)";
 
-        ctx.textAlign="right";
+    ctx.lineWidth = 6;
 
-        ctx.textBaseline = "top";
+    ctx.font = this.getFont(56);
 
-        ctx.strokeStyle = "rgba(0,0,0,.35)";
+    ctx.textAlign = "right";
 
-        ctx.lineWidth = 5;
+    ctx.textBaseline = "top";
 
-        const text =
-            `เวลา : ${Math.ceil(this.game.time)}`;
+    const x = this.game.renderer.gameWidth - 60;
+    const y = 60;
 
-        const margin = 60;
-        const iconSpace = 80;
-    
-        ctx.strokeText(
-    text,
-    this.game.renderer.gameWidth - margin - iconSpace,
-    margin
-);
+    const text = `⏰ ${Math.ceil(this.game.time)}`;
 
-ctx.fillText(
-    text,
-    this.game.renderer.gameWidth - margin - iconSpace,
-    margin
-);
+    ctx.strokeText(text, x, y);
+    ctx.fillText(text, x, y);
 
-        ctx.restore();
+    ctx.restore();
 
-    }
+}
 
     drawCombo(ctx) {
 
-        if (this.game.combo <= 1) return;
+    if (this.game.combo <= 1) return;
 
-        ctx.save();
+    ctx.save();
 
-        ctx.fillStyle = "#FFD93D";
+    ctx.fillStyle = "#FFD700";
 
-        ctx.font = this.getFont(42);
+    ctx.strokeStyle = "#B22222";
 
-        ctx.textAlign = "right";
+    ctx.lineWidth = 6;
 
-        ctx.textBaseline = "top";
+    ctx.font = this.getFont(48);
 
-        ctx.strokeStyle = "#000";
+    ctx.textAlign = "right";
 
-        ctx.lineWidth = 6;
+    ctx.textBaseline = "top";
 
-        const text =
-            `${this.game.combo} COMBO`;
+    const x = this.game.renderer.gameWidth - 60;
+    const y = 135;
 
-        const margin = 60;
+    const text = `🔥 x${this.game.combo}`;
 
-ctx.strokeText(
-    text,
-    this.game.renderer.width - margin,
-    120
-);
+    ctx.strokeText(text, x, y);
+    ctx.fillText(text, x, y);
 
-ctx.fillText(
-    text,
-    this.game.renderer.width - margin,
-    120
-);
+    ctx.restore();
 
-        ctx.restore();
-
-    }
+}
 
     drawGameOver(ctx) {
 
@@ -257,7 +233,7 @@ const h = this.game.renderer.height;
 
     ctx.fillStyle = "#FFFFFF";
 
-    ctx.font = this.getFont(100);
+    ctx.font = this.getFont(110);
 
     ctx.fillText(
 
@@ -269,7 +245,7 @@ const h = this.game.renderer.height;
 
     );
 
-    ctx.font = this.getFont(34);
+    ctx.font = this.getFont(60);
 
     ctx.fillText(
 
