@@ -18,7 +18,10 @@ export default class Game {
 
         this.renderer = new Renderer(this.canvas);
 
-        this.input = new Input(this.canvas);
+        this.input = new Input(
+    this.canvas,
+    this.renderer
+);
 
         this.balloonManager =
     new BalloonManager(
@@ -62,26 +65,32 @@ export default class Game {
 
     start() {
 
-        this.showStart = false;
+    this.showStart = false;
 
-        if (this.running) return;
+    this.running = true;
 
-        this.running = true;
+    this.gameOver = false;
 
-        this.questionType =
-    Math.random() < 0.5
-        ? "spoken"
-        : "written";
+    this.score = 0;
 
+    this.combo = 0;
 
+    this.bestCombo = 0;
 
-        this.renderer.resize();
+    this.comboTimer = 0;
 
-        this.balloonManager.createQuestion();
+    this.time = 60;
 
-        
+    this.currentQuestion = 1;
 
-    }
+    this.questionType =
+        Math.random() < 0.5
+            ? "spoken"
+            : "written";
+
+    this.balloonManager.createQuestion();
+
+}
 
     loop(time) {
 
@@ -119,23 +128,27 @@ if (this.showStart) {
 
     if (this.input.justPressed) {
 
+        this.input.endFrame();
+
         this.start();
 
     }
 
     return;
 
-}    
+}
 
 
 if (this.gameOver) {
 
     if (this.input.justPressed) {
 
+        this.input.endFrame();
+
         this.restart();
 
     }
-    
+
     return;
 
 }
@@ -221,7 +234,8 @@ this.input.endFrame();
     this.time = 60;
 
     this.gameOver = false;
-    this.running = true;
+    this.running = false;
+    this.showStart = true;
 
     this.questionType =
     Math.random() < 0.5
@@ -230,7 +244,7 @@ this.input.endFrame();
 
     
 
-    this.balloonManager.createQuestion();
+    
      
     
 

@@ -41,7 +41,13 @@ export default class FloatingText {
 
         ctx.lineWidth = 4;
 
-        ctx.font = "bold 32px Sarabun";
+        const fontSize = Math.max(
+    18,
+    this.radius * 0.45
+);
+
+ctx.font =
+    `bold ${fontSize}px Sarabun`;
 
         ctx.textAlign = "center";
 

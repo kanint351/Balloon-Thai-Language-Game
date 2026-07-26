@@ -1,8 +1,9 @@
 export default class Input {
 
-    constructor(canvas) {
+    constructor(canvas, renderer) {
 
-        this.canvas = canvas;
+    this.canvas = canvas;
+    this.renderer = renderer;
 
         this.x = 0;
         this.y = 0;
@@ -39,17 +40,28 @@ export default class Input {
 
     getPosition(event) {
 
-        const rect = this.canvas.getBoundingClientRect();
+    const rect =
+        this.canvas.getBoundingClientRect();
 
-        return {
+    const screenX =
+        event.clientX - rect.left;
 
-            x: event.clientX - rect.left,
+    const screenY =
+        event.clientY - rect.top;
 
-            y: event.clientY - rect.top
+    return {
 
-        };
+        x:
+            (screenX - this.renderer.offsetX) /
+            this.renderer.scale,
 
-    }
+        y:
+            (screenY - this.renderer.offsetY) /
+            this.renderer.scale
+
+    };
+
+}
 
     onPointerDown(event) {
 

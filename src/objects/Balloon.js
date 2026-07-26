@@ -28,15 +28,26 @@ this.scale = 1;
     this.word = word;
     this.wordType = wordType;
 
-    this.radius = 42 + Math.random() * 8;
+    const scale = Math.min(
+    window.innerWidth / 1920,
+    window.innerHeight / 1080
+);
 
-    this.speed = 220 + Math.random() * 120;
+this.radius =
+    (42 + Math.random() * 8) *
+    Math.max(0.8, Math.min(scale, 1.2));
+
+    this.speed =
+    (220 + Math.random() * 120) *
+    Math.max(0.8, Math.min(scale, 1.15));
 
     this.swingOffset = Math.random() * Math.PI * 2;
 
     this.swingSpeed = 1.5 + Math.random();
 
-    this.swingAmount = 40 + Math.random() * 20;
+    this.swingAmount =
+    (40 + Math.random() * 20) *
+    Math.max(0.8, Math.min(scale, 1.2));
 
     this.time = 0;
 
@@ -166,23 +177,45 @@ this.popDuration = 0.12;
 
     ctx.translate(this.x, this.y);
 
+    const r = this.radius;
+
     ctx.fillStyle = this.color;
 
     ctx.beginPath();
 
-    ctx.moveTo(0, -48);
+    ctx.moveTo(0,-r);
 
-    ctx.bezierCurveTo(
-        35, -48,
-        45, -5,
-        0, 48
-    );
+ctx.bezierCurveTo(
 
-    ctx.bezierCurveTo(
-        -45, -5,
-        -35, -48,
-        0, -48
-    );
+    r*0.75,
+
+    -r,
+
+    r,
+
+    -5,
+
+    0,
+
+    r
+
+);
+
+ctx.bezierCurveTo(
+
+    -r,
+
+    -5,
+
+    -r*0.75,
+
+    -r,
+
+    0,
+
+    -r
+
+);
 
     ctx.fill();
 
@@ -232,7 +265,7 @@ this.popDuration = 0.12;
 
     ctx.moveTo(
         this.x,
-        this.y + 55
+        this.y + this.radius+8
     );
 
     const curve =
@@ -242,11 +275,11 @@ this.popDuration = 0.12;
 
         this.x + curve,
 
-        this.y + 90,
+        this.y + this.radius+45,
 
         this.x,
 
-        this.y + 125
+        this.y + this.radius+80
 
     );
 
@@ -258,7 +291,13 @@ this.popDuration = 0.12;
 
     ctx.fillStyle = "#fff";
 
-    ctx.font = "bold 20px Sarabun";
+    const fontSize = Math.max(
+    34,
+    this.radius * 0.75
+);
+
+ctx.font =
+    `bold ${fontSize}px Sarabun`;
 
     ctx.textAlign = "center";
 

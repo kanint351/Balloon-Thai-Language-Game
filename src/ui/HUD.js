@@ -6,6 +6,12 @@ export default class HUD {
 
     }
 
+    getFont(size) {
+
+    return `bold ${size + 10}px Sarabun`;
+
+}
+
     draw(ctx) {
 
         if (this.game.showStart) {
@@ -30,7 +36,7 @@ export default class HUD {
         ctx.save();
 
 ctx.fillStyle = "#ffffff";
-ctx.font = "bold 30px Sarabun";
+ctx.font = this.getFont(30);
 ctx.textAlign = "center";
 
 const question =
@@ -47,7 +53,7 @@ ctx.fillText(
 
     this.game.renderer.width / 2,
 
-    90
+    170
 
 );
 
@@ -72,21 +78,21 @@ ctx.restore();
 
     ctx.fillStyle = "#ffffff";
 
-    ctx.font = "bold 56px Sarabun";
+    ctx.font = this.getFont(56);
     ctx.fillText(
         "🎈 เกมลูกโป่งคำศัพท์",
         this.game.renderer.width / 2,
         140
     );
 
-    ctx.font = "bold 38px Sarabun";
+    ctx.font = this.getFont(38);
     ctx.fillText(
         "คำภาษาพูด กับ คำภาษาเขียน",
         this.game.renderer.width / 2,
         220
     );
 
-    ctx.font = "28px Sarabun";
+    ctx.font = this.getFont(28);
 
     ctx.fillText(
         "คลิกเลือกลูกโป่งให้ตรงกับโจทย์",
@@ -102,7 +108,7 @@ ctx.restore();
 
     ctx.fillStyle = "#FFD93D";
 
-    ctx.font = "bold 40px Sarabun";
+    ctx.font = this.getFont(58);
 
     ctx.fillText(
         "▶ คลิกเพื่อเริ่มเกม",
@@ -122,7 +128,7 @@ ctx.restore();
 
         ctx.fillStyle = "#ffffff";
 
-        ctx.font = "bold 34px Sarabun";
+        ctx.font = this.getFont(46);
 
         ctx.textAlign = "left";
 
@@ -135,9 +141,15 @@ ctx.restore();
         const text =
             `คะแนน : ${this.game.score}`;
 
-        ctx.strokeText(text, 30, 25);
+        
 
-        ctx.fillText(text, 30, 25);
+        const margin = 60;
+
+ctx.fillText(
+    `คะแนน : ${this.game.score}`,
+    margin,
+    margin
+);
 
         ctx.restore();
 
@@ -149,9 +161,9 @@ ctx.restore();
 
         ctx.fillStyle = "#ffffff";
 
-        ctx.font = "bold 34px Sarabun";
+        ctx.font = this.getFont(46);
 
-        ctx.textAlign = "center";
+        ctx.textAlign="right";
 
         ctx.textBaseline = "top";
 
@@ -162,17 +174,20 @@ ctx.restore();
         const text =
             `เวลา : ${Math.ceil(this.game.time)}`;
 
+        const margin = 60;
+        const iconSpace = 80;
+    
         ctx.strokeText(
-            text,
-            window.innerWidth / 2,
-            25
-        );
+    text,
+    this.game.renderer.gameWidth - margin - iconSpace,
+    margin
+);
 
-        ctx.fillText(
-            text,
-            window.innerWidth / 2,
-            25
-        );
+ctx.fillText(
+    text,
+    this.game.renderer.gameWidth - margin - iconSpace,
+    margin
+);
 
         ctx.restore();
 
@@ -186,7 +201,7 @@ ctx.restore();
 
         ctx.fillStyle = "#FFD93D";
 
-        ctx.font = "bold 42px Sarabun";
+        ctx.font = this.getFont(42);
 
         ctx.textAlign = "right";
 
@@ -199,17 +214,19 @@ ctx.restore();
         const text =
             `${this.game.combo} COMBO`;
 
-        ctx.strokeText(
-            text,
-            window.innerWidth - 30,
-            25
-        );
+        const margin = 60;
 
-        ctx.fillText(
-            text,
-            window.innerWidth - 30,
-            25
-        );
+ctx.strokeText(
+    text,
+    this.game.renderer.width - margin,
+    120
+);
+
+ctx.fillText(
+    text,
+    this.game.renderer.width - margin,
+    120
+);
 
         ctx.restore();
 
@@ -217,8 +234,8 @@ ctx.restore();
 
     drawGameOver(ctx) {
 
-    const w = window.innerWidth;
-const h = window.innerHeight;
+    const w = this.game.renderer.width;
+const h = this.game.renderer.height;
 
     ctx.save();
 
@@ -240,7 +257,7 @@ const h = window.innerHeight;
 
     ctx.fillStyle = "#FFFFFF";
 
-    ctx.font = "bold 56px Sarabun";
+    ctx.font = this.getFont(100);
 
     ctx.fillText(
 
@@ -252,7 +269,7 @@ const h = window.innerHeight;
 
     );
 
-    ctx.font = "bold 34px Sarabun";
+    ctx.font = this.getFont(34);
 
     ctx.fillText(
 
@@ -274,8 +291,7 @@ const h = window.innerHeight;
 
     );
 
-    ctx.font = "28px Sarabun";
-
+    ctx.font = this.getFont(28);
     ctx.fillText(
 
         "คลิกเพื่อเล่นใหม่",

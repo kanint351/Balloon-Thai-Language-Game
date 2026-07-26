@@ -66,11 +66,11 @@ this.particles = this.particles.filter(
 
         }
 
-        if (this.input.swiping) {
+        if (this.input.down) {
 
-            this.checkSwipe();
+    this.checkSwipe();
 
-        }
+}
 
         this.balloons = this.balloons.filter(b => {
 
@@ -125,17 +125,16 @@ this.particles = this.particles.filter(
 
     spawn() {
 
-    const margin = 100;
+    const area =
+    this.game.renderer.getPlayArea();
 
-    const width = this.canvas.clientWidth;
-    const height = this.canvas.clientHeight;
+const x =
+    area.left +
+    Math.random() *
+    (area.right - area.left);
 
-    const x =
-        margin +
-        Math.random() *
-        (width - margin * 2);
-
-    const y = height + 80;
+const y =
+    area.bottom + 100;
 
     // สุ่มชุดคำ
     const word =
@@ -192,15 +191,84 @@ this.particles = this.particles.filter(
 
     createQuestion() {
 
-    // ล้างลูกโป่งเดิม
     this.balloons = [];
 
-    // สร้างลูกโป่งใหม่ 4 ลูก
+    const area =
+        this.game.renderer.getPlayArea();
+
+    const spacing =
+        (area.right - area.left) / 5;
+
     for (let i = 0; i < 4; i++) {
 
-        this.spawn();
+        const x =
+            area.left +
+            spacing * (i + 1);
+
+        const y =
+            area.bottom +
+            Math.random() * 120;
+
+        this.spawnAt(x, y);
 
     }
+
+}
+
+        spawnAt(x, y) {
+
+    const word =
+        WORDS[
+            Math.floor(
+                Math.random() *
+                WORDS.length
+            )
+        ];
+
+    const showCorrect =
+        Math.random() < 0.5;
+
+    let text;
+    let type;
+
+    if (showCorrect) {
+
+        if (this.game.questionType === "spoken") {
+
+            text = word.spoken;
+            type = "spoken";
+
+        } else {
+
+            text = word.written;
+            type = "written";
+
+        }
+
+    } else {
+
+        if (this.game.questionType === "spoken") {
+
+            text = word.written;
+            type = "written";
+
+        } else {
+
+            text = word.spoken;
+            type = "spoken";
+
+        }
+
+    }
+
+    this.balloons.push(
+        new Balloon(
+            x,
+            y,
+            text,
+            type
+        )
+    );
 
 }
 
@@ -230,43 +298,12 @@ this.particles = this.particles.filter(
             ) {
 
                 balloon.pop();
-
-                console.log(
-    balloon.word,
-    balloon.wordType,
-    this.game.questionType
+                this.createExplosion(
+    balloon.x,
+    balloon.y
 );
 
-if (balloon.wordType === this.game.questionType) {
-
-    
-
-    this.game.addScore(10);
-    this.game.currentQuestion++;
-
-    this.game.questionType =
-    Math.random() < 0.5
-        ? "spoken"
-        : "written";
-
-        this.createQuestion();
-
-        return;
-
-
-    
-
-} else {
-
-    
-
-    this.game.addScore(-5);
-
-    
-
-}
-
-this.explosions.push(
+        this.explosions.push(
 
     new Explosion(
 
@@ -282,6 +319,45 @@ this.explosions.push(
 
 
 );
+            
+        
+    
+
+if (balloon.wordType === this.game.questionType) {
+
+    this.game.addScore(10);
+
+    setTimeout(() => {
+
+        this.game.currentQuestion++;
+
+        this.game.questionType =
+            Math.random() < 0.5
+                ? "spoken"
+                : "written";
+
+        this.createQuestion();
+
+    }, 120);
+
+    return;
+
+
+
+
+    
+
+} else {
+
+    
+
+    this.game.addScore(-5);
+
+    
+
+}
+
+
 
             }
 
