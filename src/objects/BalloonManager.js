@@ -1,377 +1,361 @@
 import Balloon from "./Balloon.js";
+import { WORDS } from "../data/words.js";
 import Particle from "./Particle.js";
-
-const BASE_margin = 80;
-const BASE_DISTANCE = 110;
+import Explosion from "./Explosion.js";
+import FloatingText from "./FloatingText.js";
 
 export default class BalloonManager {
 
-    constructor(canvas, logic) {
-
+    constructor(game, canvas, input) {
+        this.game = game;
         this.canvas = canvas;
-        this.logic = logic;
-        this.uiScale = 1;
+        this.input = input;
+
         this.balloons = [];
+
+        this.spawnTimer = 0;
+
+        this.spawnInterval = 1.0;
+
+        this.maxBalloons = 12;
+
         this.particles = [];
 
+        this.explosions = [];
+
+        this.floatingTexts = [];
     }
 
-    updateScale() {
+    update(dt) {
 
-    this.uiScale = Math.max(
-        0.75,
-        Math.min(
-        this.canvas.clientWidth / 1280,
-        this.canvas.clientHeight / 720
-        )
-    );
+        for (const p of this.particles) {
+
+    p.update(dt);
 
 }
 
-    // =====================================
-    // RESET
-    // =====================================
+for (const e of this.explosions) {
 
-    reset() {
+    e.update(dt);
 
-        this.balloons = [];
+}
+for (const text of this.floatingTexts) {
 
-        this.spawnInitial();
+    text.update(dt);
 
-    }
+}
 
-    // =====================================
-    // INITIAL
-    // =====================================
+this.floatingTexts =
+    this.floatingTexts.filter(
+        text => text.alive
+    );
 
-    spawnInitial() {
+this.explosions = this.explosions.filter(
+    e => e.alive
+);
 
-        this.spawnBalloon(
-            this.logic.current
-        );
+this.particles = this.particles.filter(
+    p => p.alive
+);
 
-        this.logic
-            .getWrongAnswers(7)
-            .forEach(word => {
+        
 
-                this.spawnBalloon(word);
+        for (const balloon of this.balloons) {
 
-            });
-
-    }
-
-    // =====================================
-    // POSITION
-    // =====================================
-
-    randomPosition() {
-
-    this.updateScale();
-
-    const margin =
-        BASE_margin * this.uiScale;
-
-    const minDistance =
-        BASE_DISTANCE * this.uiScale;
-
-    let x;
-    let y;
-
-    let attempts = 0;
-
-        while (true) {
-
-            x =
-                margin +
-                Math.random() *
-                (this.canvas.clientWidth - margin * 2);
-
-            y =
-                this.canvas.clientHeight +
-                80 * this.uiScale +
-                Math.random() * 
-                (300 * this.uiScale);
-
-            let overlap = false;
-
-            for (const balloon of this.balloons) {
-
-                if (
-
-                    Math.hypot(
-
-                        balloon.x - x,
-
-                        balloon.y - y
-
-                    ) < minDistance
-
-                ) {
-
-                    overlap = true;
-                    break;
-
-                }
-
-            }
-
-            if (!overlap || attempts > 100) {
-
-                return { x, y };
-
-            }
-
-            attempts++;
+            balloon.update(dt);
 
         }
 
-    }
+        if (this.input.swiping) {
 
-    // =====================================
-    // CREATE BALLOON
-    // =====================================
-
-    spawnBalloon(word) {
-
-    const pos = this.randomPosition();
-
-    const balloon = new Balloon(
-
-            pos.x,
-
-            pos.y,
-
-            word.written
-
-    
-
-    );
-    balloon.setScale(this.uiScale);
-    this.balloons.push(balloon);
-
-}
-        // =====================================
-    // WRONG BALLOON
-    // =====================================
-
-    spawnWrongBalloon() {
-
-    const hasCorrect = this.balloons.some(
-        b => b.word === this.logic.current.written
-    );
-
-    // ถ้าไม่มีคำตอบ ให้สร้างคำตอบก่อน
-    if (!hasCorrect) {
-
-    console.log("ไม่มีคำตอบ สร้างใหม่:", this.logic.current.written);
-
-    this.spawnBalloon(this.logic.current);
-
-    return;
-
-}
-
-    // มีคำตอบแล้ว ค่อยสร้างคำหลอก
-    const used = this.balloons.map(b => b.word);
-
-    const pool = this.logic
-        .getWrongAnswers()
-        .filter(
-            word => !used.includes(word.written)
-        );
-
-    if (pool.length === 0) return;
-
-    const random =
-        pool[Math.floor(Math.random() * pool.length)];
-
-    this.spawnBalloon(random);
-}
-
-    // =====================================
-    // UPDATE
-    // =====================================
-
-    update() {
-        this.updateScale();
-
-        for (
-
-            let i = this.balloons.length - 1;
-
-            i >= 0;
-
-            i--
-
-        ) {
-
-            const balloon = this.balloons[i];
-
-            balloon.setScale(this.uiScale);
-            balloon.update();
-
-            // ลอยพ้นจอ
-
-            if (
-
-                balloon.y <
-
-                -(balloon.radius * this.uiScale)
-
-            ) {
-
-                this.balloons.splice(i,1);
-
-                this.spawnWrongBalloon();
-
-            }
+            this.checkSwipe();
 
         }
 
-        // Particle
+        this.balloons = this.balloons.filter(b => {
 
-        for (
+            return b.alive && !b.isOutOfScreen();
 
-            let i = this.particles.length - 1;
+        
 
-            i >= 0;
+        });
 
-            i--
+        if (this.balloons.length === 0) {
 
-        ) {
+    this.game.currentQuestion++;
 
-            const p =
+    this.game.questionType =
+        Math.random() < 0.5
+            ? "spoken"
+            : "written";
 
-                this.particles[i];
+    this.createQuestion();
 
-            p.update();
-
-            if (p.life <= 0) {
-
-                this.particles.splice(i,1);
-
-            }
-
-        }
+}
 
     }
-
-    // =====================================
-    // DRAW
-    // =====================================
 
     draw(ctx) {
 
-        for (
+    for (const p of this.particles) {
 
-            const balloon of
+        p.draw(ctx);
 
-            this.balloons
+    }
 
-        ) {
+    for (const e of this.explosions) {
 
-            balloon.draw(ctx);
+        e.draw(ctx);
+
+    }
+
+    for (const balloon of this.balloons) {
+
+        balloon.draw(ctx);
+
+    }
+
+    for (const text of this.floatingTexts) {
+
+    text.draw(ctx);
+
+}
+
+}
+
+    spawn() {
+
+    const margin = 100;
+
+    const width = this.canvas.clientWidth;
+    const height = this.canvas.clientHeight;
+
+    const x =
+        margin +
+        Math.random() *
+        (width - margin * 2);
+
+    const y = height + 80;
+
+    // สุ่มชุดคำ
+    const word =
+        WORDS[
+            Math.floor(Math.random() * WORDS.length)
+        ];
+
+    // 50% ออกคำตอบที่ถูก
+    const showCorrect = Math.random() < 0.5;
+
+    let text;
+    let type;
+
+    if (showCorrect) {
+
+        if (this.game.questionType === "spoken") {
+
+            text = word.spoken;
+            type = "spoken";
+
+        } else {
+
+            text = word.written;
+            type = "written";
 
         }
 
-        for (
+    } else {
 
-            const p of
+        if (this.game.questionType === "spoken") {
 
-            this.particles
+            text = word.written;
+            type = "written";
 
-        ) {
+        } else {
 
-            p.draw(ctx);
+            text = word.spoken;
+            type = "spoken";
 
         }
 
     }
 
-    // =====================================
-    // HIT
-    // =====================================
+    const balloon = new Balloon(
+        x,
+        y,
+        text,
+        type
+    );
 
-    hit(x,y) {
+    this.balloons.push(balloon);
 
-        for (
+}
 
-            let i =
+    createQuestion() {
 
-            this.balloons.length-1;
+    // ล้างลูกโป่งเดิม
+    this.balloons = [];
 
-            i>=0;
+    // สร้างลูกโป่งใหม่ 4 ลูก
+    for (let i = 0; i < 4; i++) {
 
-            i--
+        this.spawn();
 
-        ) {
+    }
 
-            const balloon =
+}
 
-                this.balloons[i];
+    checkSwipe() {
+
+        const x1 = this.input.prevX;
+        const y1 = this.input.prevY;
+
+        const x2 = this.input.x;
+        const y2 = this.input.y;
+
+        for (const balloon of this.balloons) {
+
+            if (!balloon.alive) continue;
 
             if (
-
-                balloon.hit(x,y)
-
+                !balloon.popping &&
+                this.lineHitsCircle(
+                    x1,
+                    y1,
+                    x2,
+                    y2,
+                    balloon.x,
+                    balloon.y,
+                    balloon.radius
+                )
             ) {
 
-                return {
+                balloon.pop();
 
-                    balloon,
+                console.log(
+    balloon.word,
+    balloon.wordType,
+    this.game.questionType
+);
 
-                    index:i
+if (balloon.wordType === this.game.questionType) {
 
-                };
+    
+
+    this.game.addScore(10);
+    this.game.currentQuestion++;
+
+    this.game.questionType =
+    Math.random() < 0.5
+        ? "spoken"
+        : "written";
+
+        this.createQuestion();
+
+        return;
+
+
+    
+
+} else {
+
+    
+
+    this.game.addScore(-5);
+
+    
+
+}
+
+this.explosions.push(
+
+    new Explosion(
+
+        balloon.x,
+
+        balloon.y,
+
+        balloon.color
+
+    )
+
+
+
+
+);
 
             }
 
         }
 
-        return null;
-
     }
-        // =====================================
-    // REMOVE
-    // =====================================
 
-    remove(index) {
+    lineHitsCircle(
+        x1,
+        y1,
+        x2,
+        y2,
+        cx,
+        cy,
+        r
+    ) {
 
-        if (
-            index >= 0 &&
-            index < this.balloons.length
-        ) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
 
-            this.balloons.splice(index, 1);
+        const length2 =
+            dx * dx + dy * dy;
+
+        if (length2 === 0) {
+
+            const dist2 =
+                (cx - x1) ** 2 +
+                (cy - y1) ** 2;
+
+            return dist2 <= r * r;
 
         }
 
+        let t =
+            (
+                (cx - x1) * dx +
+                (cy - y1) * dy
+            ) / length2;
+
+        t = Math.max(
+            0,
+            Math.min(
+                1,
+                t
+            )
+        );
+
+        const px =
+            x1 + t * dx;
+
+        const py =
+            y1 + t * dy;
+
+        const dist2 =
+            (cx - px) ** 2 +
+            (cy - py) ** 2;
+
+        return dist2 <= r * r;
+
     }
 
-    // =====================================
-    // EXPLODE
-    // =====================================
+    createExplosion(x, y) {
 
-    explode(balloon) {
+    for (let i = 0; i < 20; i++) {
 
-        for (let i = 0; i < 20; i++) {
-
-            this.particles.push(
-
-                new Particle(
-
-                    balloon.x,
-
-                    balloon.y,
-
-                    balloon.color
-
-                )
-
-            );
-
-        }
+        this.particles.push(
+            new Particle(x, y)
+        );
 
     }
-
 }
+}
+
+    
+
+    
+

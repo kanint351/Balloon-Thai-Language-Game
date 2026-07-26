@@ -1,5 +1,11 @@
 import "./style.css";
+
 import Game from "./core/Game.js";
 
-const game = new Game();
-game.start();
+window.addEventListener("DOMContentLoaded", () => {
+
+    const game = new Game();
+
+    
+
+});

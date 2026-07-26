@@ -1,68 +1,109 @@
 export default class Input {
+
     constructor(canvas) {
+
         this.canvas = canvas;
 
         this.x = 0;
         this.y = 0;
 
-        this.drawX = 0;
-        this.drawY = 0;
+        this.prevX = 0;
+        this.prevY = 0;
 
-        this.clicked = false;
-        this.isPointerDown = false;
+        this.dx = 0;
+        this.dy = 0;
 
-        // ป้องกันการเลื่อน/ซูมขณะลากบนมือถือ
-        canvas.style.touchAction = "none";
+        this.down = false;
 
-        const updatePosition = (clientX, clientY) => {
-            const rect = canvas.getBoundingClientRect();
+        this.swiping = false;
 
-            // แปลงพิกัดจาก CSS เป็นพิกัดจริงของ Canvas
-            this.x = clientX - rect.left;
-            this.y = clientY - rect.top;
+        this.justPressed = false;
+        this.justReleased = false;
+
+        canvas.addEventListener(
+            "pointerdown",
+            this.onPointerDown.bind(this)
+        );
+
+        canvas.addEventListener(
+            "pointermove",
+            this.onPointerMove.bind(this)
+        );
+
+        window.addEventListener(
+            "pointerup",
+            this.onPointerUp.bind(this)
+        );
+
+    }
+
+    getPosition(event) {
+
+        const rect = this.canvas.getBoundingClientRect();
+
+        return {
+
+            x: event.clientX - rect.left,
+
+            y: event.clientY - rect.top
+
         };
 
-        canvas.addEventListener("pointerdown", (e) => {
-            this.isPointerDown = true;
-            this.clicked = true;
-
-            updatePosition(e.clientX, e.clientY);
-
-            canvas.setPointerCapture(e.pointerId);
-        });
-
-        canvas.addEventListener("pointermove", (e) => {
-            updatePosition(e.clientX, e.clientY);
-        });
-
-        canvas.addEventListener("pointerup", (e) => {
-            this.isPointerDown = false;
-
-            if (canvas.hasPointerCapture(e.pointerId)) {
-                canvas.releasePointerCapture(e.pointerId);
-            }
-        });
-
-        canvas.addEventListener("pointercancel", () => {
-            this.isPointerDown = false;
-        });
-
-        canvas.addEventListener("pointerleave", () => {
-            this.isPointerDown = false;
-        });
     }
 
-    update() {
-        this.drawX += (this.x - this.drawX) * 0.35;
-        this.drawY += (this.y - this.drawY) * 0.35;
+    onPointerDown(event) {
+
+        const p = this.getPosition(event);
+
+        this.x = p.x;
+        this.y = p.y;
+
+        this.prevX = p.x;
+        this.prevY = p.y;
+
+        this.dx = 0;
+        this.dy = 0;
+
+        this.down = true;
+
+        this.justPressed = true;
+
     }
 
-    consumeClick() {
-        if (this.clicked) {
-            this.clicked = false;
-            return true;
-        }
+    onPointerMove(event) {
 
-        return false;
+        if (!this.down) return;
+
+        const p = this.getPosition(event);
+
+        this.prevX = this.x;
+        this.prevY = this.y;
+
+        this.x = p.x;
+        this.y = p.y;
+
+        this.dx = this.x - this.prevX;
+        this.dy = this.y - this.prevY;
+
+        this.swiping = true;
+
     }
+
+    onPointerUp() {
+
+        this.down = false;
+
+        this.swiping = false;
+
+        this.justReleased = true;
+
+    }
+
+    endFrame() {
+
+    this.justPressed = false;
+    this.justReleased = false;
+
+}
+
 }

@@ -1,37 +1,55 @@
 export default class Particle {
 
-    constructor(x, y, color) {
+    constructor(x, y, color = "#ff5c8a") {
+
+        this.reset(x, y, color);
+
+    }
+
+    reset(x, y, color) {
 
         this.x = x;
         this.y = y;
 
+        this.vx = (Math.random() - 0.5) * 400;
+        this.vy = (Math.random() - 0.5) * 400;
+
+        this.life = 1;
+        this.radius = 3 + Math.random() * 5;
+
         this.color = color;
 
-        this.vx = (Math.random() - 0.5) * 8;
-        this.vy = (Math.random() - 0.5) * 8;
-
-        this.size = 6 + Math.random() * 6;
-
-        this.life = 40;
+        this.alive = true;
 
     }
 
-    update() {
+    update(dt) {
 
-        this.x += this.vx;
-        this.y += this.vy;
+        if (!this.alive) return;
 
-        this.vy += 0.15;
+        this.life -= dt * 2;
 
-        this.life--;
+        if (this.life <= 0) {
+
+            this.alive = false;
+            return;
+
+        }
+
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+
+        this.vy += 500 * dt;
 
     }
 
     draw(ctx) {
 
+        if (!this.alive) return;
+
         ctx.save();
 
-        ctx.globalAlpha = this.life / 40;
+        ctx.globalAlpha = this.life;
 
         ctx.fillStyle = this.color;
 
@@ -40,7 +58,7 @@ export default class Particle {
         ctx.arc(
             this.x,
             this.y,
-            this.size,
+            this.radius,
             0,
             Math.PI * 2
         );
